@@ -1287,6 +1287,19 @@
                     <p>Your 1.3" OLED may work with "0.96" OLED" firmware if it uses SSD1306 driver. Try it first, or use "Generic" firmware if display doesn't work.</p>
                 </div>
                 
+                <div class="info-box" style="background: rgba(255, 200, 0, 0.1); border-left-color: #ffc800; margin-top: 20px;">
+                    <strong style="color: #ffc800;">🔧 Display Shows Garbage/Corrupted?</strong>
+                    <p style="margin-top: 10px; color: #e0e7ff;">
+                        This means display is working but firmware/display type mismatch. Try:
+                    </p>
+                    <ol style="margin-left: 25px; margin-top: 10px; color: #e0e7ff; line-height: 1.8;">
+                        <li>Try different "0.96" OLED" firmware variant (Combo-Channel-Select, Basic, etc.)</li>
+                        <li>Check if display is SSD1306 or SH1106 (most 1.3" are SSD1306)</li>
+                        <li>Verify I2C address is 0x3C (most common)</li>
+                        <li>If nothing works, use "Generic" firmware (modules work, no display)</li>
+                    </ol>
+                </div>
+                
                 <div class="alert" style="background: rgba(255, 200, 0, 0.15); border-left-color: #ffc800; margin-top: 25px;">
                     <strong style="color: #ffc800;">⚠️ Display Not Working?</strong>
                     <div style="margin-top: 15px; color: #e0e7ff;">
