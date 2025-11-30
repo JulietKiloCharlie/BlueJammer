@@ -1106,6 +1106,17 @@
                 <p style="margin-top: 10px; color: #e0e7ff;">These GPIO pin assignments match the standard BlueJammer firmware exactly. The firmware from the web flasher will work perfectly.</p>
             </div>
             
+            <div class="alert" style="background: rgba(255, 200, 0, 0.15); border-left-color: #ffc800; margin-bottom: 25px;">
+                <strong style="color: #ffc800;">⚠️ Still Having Issues?</strong>
+                <p style="margin-top: 10px; color: #e0e7ff;">
+                    If Module 1 still fails after adding the capacitor, check:<br>
+                    • All pin connections are tight and secure<br>
+                    • Pin numbers match exactly (Pin 3→GPIO 16, Pin 4→GPIO 15, etc.)<br>
+                    • No wires are loose or touching each other<br>
+                    • Compare with Module 2's working connections
+                </p>
+            </div>
+            
             <div class="card">
                 <div class="connection-flow">
                     <div class="device-box">
@@ -1124,6 +1135,44 @@
                         <div class="pin data">Pin 5 (SCK)</div>
                         <div class="pin data">Pin 6 (MOSI)</div>
                         <div class="pin data">Pin 7 (MISO)</div>
+                    </div>
+                </div>
+                
+                <div style="margin: 25px 0; padding: 20px; background: rgba(0, 150, 255, 0.1); border-radius: 6px; border: 1px solid rgba(0, 150, 255, 0.3);">
+                    <h4 style="color: #00aaff; margin-bottom: 15px;">🔍 Connection Verification Checklist</h4>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; margin-top: 15px;">
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <span style="color: #00aaff;">✓</span>
+                            <span style="font-size: 0.9em;">Pin 1 (GND) → ESP32 GND</span>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <span style="color: #00aaff;">✓</span>
+                            <span style="font-size: 0.9em;">Pin 2 (VCC) → ESP32 3.3V + Cap</span>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <span style="color: #00aaff;">✓</span>
+                            <span style="font-size: 0.9em;">Pin 3 (CE) → GPIO 16</span>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <span style="color: #00aaff;">✓</span>
+                            <span style="font-size: 0.9em;">Pin 4 (CSN) → GPIO 15</span>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <span style="color: #00aaff;">✓</span>
+                            <span style="font-size: 0.9em;">Pin 5 (SCK) → GPIO 14</span>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <span style="color: #00aaff;">✓</span>
+                            <span style="font-size: 0.9em;">Pin 6 (MOSI) → GPIO 13</span>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <span style="color: #00aaff;">✓</span>
+                            <span style="font-size: 0.9em;">Pin 7 (MISO) → GPIO 12</span>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <span style="color: #00aaff;">✓</span>
+                            <span style="font-size: 0.9em;">Pin 8 (IRQ) → NOT CONNECTED</span>
+                        </div>
                     </div>
                 </div>
                 
