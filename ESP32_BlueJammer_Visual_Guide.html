@@ -1413,8 +1413,17 @@ GPIO 5      →  OLED SCL
                 <div style="margin-bottom: 25px;">
                     <h4 style="color: #00aaff; margin-bottom: 15px;">Common Issues & Solutions</h4>
                     
+                    <div class="info-box" style="margin-bottom: 15px; background: rgba(255, 50, 50, 0.15); border-left-color: #ff3232; border-left-width: 4px;">
+                        <strong style="color: #ff6b6b;">🔴 Issue #1: Missing Capacitor (MOST COMMON!)</strong>
+                        <p style="margin-top: 10px; color: #e0e7ff;">
+                            <strong>Problem:</strong> Module 1 fails to initialize because the 10µF capacitor is missing or not connected.<br>
+                            <strong>Solution:</strong> Connect 10µF capacitor: <strong>+ (positive)</strong> to Pin 2 (VCC), <strong>- (negative)</strong> to Pin 1 (GND) on Module 1.<br>
+                            <strong>Why:</strong> nRF24L01 modules need this capacitor for stable power. Without it, they cannot initialize properly.
+                        </p>
+                    </div>
+                    
                     <div class="info-box" style="margin-bottom: 15px; background: rgba(255, 200, 0, 0.1); border-left-color: #ffc800;">
-                        <strong style="color: #ffc800;">🔌 Issue 1: Loose Connections</strong>
+                        <strong style="color: #ffc800;">🔌 Issue 2: Loose Connections</strong>
                         <p style="margin-top: 10px; color: #e0e7ff;">
                             <strong>Solution:</strong> Unplug USB, re-seat all Module 1 wires, ensure tight connections. 
                             Gently tug each wire to verify it's secure.
@@ -1422,7 +1431,7 @@ GPIO 5      →  OLED SCL
                     </div>
                     
                     <div class="info-box" style="margin-bottom: 15px; background: rgba(255, 200, 0, 0.1); border-left-color: #ffc800;">
-                        <strong style="color: #ffc800;">⚡ Issue 2: Power Problems</strong>
+                        <strong style="color: #ffc800;">⚡ Issue 3: Power Problems</strong>
                         <p style="margin-top: 10px; color: #e0e7ff;">
                             <strong>Solution:</strong> Verify 3.3V is present at Module 1 VCC (use multimeter). 
                             Check capacitor is connected correctly. Try different USB port/cable for more power.
@@ -1430,7 +1439,7 @@ GPIO 5      →  OLED SCL
                     </div>
                     
                     <div class="info-box" style="margin-bottom: 15px; background: rgba(255, 200, 0, 0.1); border-left-color: #ffc800;">
-                        <strong style="color: #ffc800;">🔢 Issue 3: Wrong Pin Mapping</strong>
+                        <strong style="color: #ffc800;">🔢 Issue 4: Wrong Pin Mapping</strong>
                         <p style="margin-top: 10px; color: #e0e7ff;">
                             <strong>Solution:</strong> Double-check each pin connection matches the table above exactly. 
                             Common mistake: swapping CE and CSN pins.
@@ -1438,7 +1447,7 @@ GPIO 5      →  OLED SCL
                     </div>
                     
                     <div class="info-box" style="margin-bottom: 15px; background: rgba(255, 200, 0, 0.1); border-left-color: #ffc800;">
-                        <strong style="color: #ffc800;">⚠️ Issue 4: GPIO 12 Boot Problem</strong>
+                        <strong style="color: #ffc800;">⚠️ Issue 5: GPIO 12 Boot Problem</strong>
                         <p style="margin-top: 10px; color: #e0e7ff;">
                             <strong>Solution:</strong> GPIO 12 (MISO) can cause boot issues if pulled HIGH. 
                             Temporarily disconnect GPIO 12, boot ESP32, then reconnect. Or verify GPIO 12 connection is clean.
@@ -1446,7 +1455,7 @@ GPIO 5      →  OLED SCL
                     </div>
                     
                     <div class="info-box" style="margin-bottom: 15px; background: rgba(255, 200, 0, 0.1); border-left-color: #ffc800;">
-                        <strong style="color: #ffc800;">🔧 Issue 5: Faulty Module</strong>
+                        <strong style="color: #ffc800;">🔧 Issue 6: Faulty Module</strong>
                         <p style="margin-top: 10px; color: #e0e7ff;">
                             <strong>Solution:</strong> If Module 2 works but Module 1 doesn't, try swapping them. 
                             If Module 2 works in Module 1's position, Module 1 hardware may be faulty.

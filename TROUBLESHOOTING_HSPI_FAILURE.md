@@ -180,7 +180,37 @@ Pin 1 (GND)  Pin 3 (CE)   Pin 5 (SCK)   Pin 7 (MISO)
 
 ## 🔧 Quick Fixes to Try
 
-### Fix 1: Re-seat All Connections
+### Fix 1: Check for Missing Capacitor (MOST COMMON ISSUE!)
+
+**⚠️ This is the #1 cause of HSPI initialization failure!**
+
+**Symptoms:**
+- Module 1 fails to initialize
+- Module 2 works fine (has capacitor)
+- Error: "HSPI nRF24 module could NOT be initialized"
+
+**Solution:**
+1. **Unplug USB** from ESP32
+2. **Connect 10µF capacitor** to Module 1:
+   - **Positive (+) lead** → Pin 2 (VCC)
+   - **Negative (-) lead** → Pin 1 (GND)
+3. **Place capacitor close** to the module (ideally directly on the pins)
+4. **Plug in USB** and test
+
+**Why it's needed:**
+- nRF24L01 modules draw current in bursts
+- The capacitor smooths out power supply fluctuations
+- Without it, the module cannot initialize properly
+- **Both modules need their own capacitor!**
+
+**Verification:**
+- Check that Module 1 has a capacitor connected
+- Check that Module 2 also has a capacitor (if it's working, it probably does)
+- Verify capacitor polarity is correct (if electrolytic type)
+
+---
+
+### Fix 2: Re-seat All Connections
 1. **Unplug USB**
 2. **Disconnect all Module 1 wires**
 3. **Reconnect them one by one**, verifying each connection
