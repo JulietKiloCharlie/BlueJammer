@@ -1286,6 +1286,22 @@
                     <strong>💡 OLED Compatibility</strong>
                     <p>Your 1.3" OLED may work with "0.96" OLED" firmware if it uses SSD1306 driver. Try it first, or use "Generic" firmware if display doesn't work.</p>
                 </div>
+                
+                <div class="alert" style="background: rgba(255, 200, 0, 0.15); border-left-color: #ffc800; margin-top: 25px;">
+                    <strong style="color: #ffc800;">⚠️ Display Not Working?</strong>
+                    <div style="margin-top: 15px; color: #e0e7ff;">
+                        <p style="margin-bottom: 10px;"><strong>Most Common Issues:</strong></p>
+                        <ol style="margin-left: 25px; line-height: 1.8;">
+                            <li><strong>Wrong Firmware:</strong> Make sure you flashed <span class="badge">"0.96" OLED"</span> firmware, NOT <span class="badge">"Generic"</span></li>
+                            <li><strong>Wrong Pin Connections:</strong> Verify SDA → GPIO 4, SCL → GPIO 5 (not swapped!)</li>
+                            <li><strong>Power Issue:</strong> OLED must use 3.3V (NOT 5V!)</li>
+                            <li><strong>Loose Connections:</strong> Re-seat all OLED wires</li>
+                        </ol>
+                        <p style="margin-top: 15px; padding: 12px; background: rgba(0, 0, 0, 0.2); border-radius: 4px; font-family: 'JetBrains Mono', monospace; font-size: 0.9em;">
+                            <strong style="color: #00aaff;">Quick Fix:</strong> Re-flash with "0.96" OLED" firmware from the web flasher
+                        </p>
+                    </div>
+                </div>
             </div>
         </div>
         
@@ -1309,7 +1325,7 @@
                 <ol style="margin-left: 25px; color: #e0e7ff; line-height: 2;">
                     <li>Connect ESP32 via USB (data-capable cable)</li>
                     <li>Go to: <a href="https://esp32-bluejammerflasher.pages.dev" target="_blank" style="color: #00aaff;">esp32-bluejammerflasher.pages.dev</a></li>
-                    <li>Select <span class="badge">Generic</span> or <span class="badge">0.96" OLED</span></li>
+                    <li>Select <span class="badge">Generic</span> (no OLED) or <span class="badge" style="background: rgba(0, 255, 0, 0.2); color: #00ff00;">0.96" OLED</span> (for display support)</li>
                     <li>Choose firmware variant (recommended: <strong>Combo-Channel-Select</strong>)</li>
                     <li>Click "Connect" → Select ESP32</li>
                     <li>Click "Flash" → Wait for completion</li>
