@@ -22,6 +22,8 @@
             color: #e0e7ff;
             line-height: 1.6;
             overflow-x: hidden;
+            -webkit-text-size-adjust: 100%;
+            -webkit-font-smoothing: antialiased;
         }
         
         .nav-sidebar {
@@ -57,6 +59,14 @@
             font-size: 0.8em;
             color: #7c8fc7;
             text-align: center;
+        }
+        
+        @media (max-width: 1024px) {
+            .nav-sidebar .credit {
+                position: relative;
+                bottom: auto;
+                margin-top: 30px;
+            }
         }
         
         .nav-sidebar .credit strong {
@@ -277,6 +287,11 @@
             display: flex;
             flex-direction: column;
             gap: 8px;
+        }
+        
+        .pin-row.horizontal {
+            flex-direction: row;
+            flex-wrap: wrap;
         }
         
         .module-visual-container {
@@ -554,19 +569,216 @@
             padding-bottom: 10px;
         }
         
+        /* Mobile Menu Toggle */
+        .mobile-menu-toggle {
+            display: none;
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 1001;
+            background: rgba(0, 150, 255, 0.2);
+            border: 1px solid rgba(0, 150, 255, 0.4);
+            color: #00aaff;
+            padding: 12px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1.2em;
+        }
+        
         @media (max-width: 1024px) {
             .nav-sidebar {
                 transform: translateX(-100%);
                 transition: transform 0.3s;
+                width: 260px;
             }
+            
+            .nav-sidebar.open {
+                transform: translateX(0);
+            }
+            
             .main-content {
                 margin-left: 0;
+            }
+            
+            .mobile-menu-toggle {
+                display: block;
+            }
+            
+            .hero-section {
+                padding: 40px 20px;
+            }
+            
+            .hero-section h1 {
+                font-size: 2.2em;
+                letter-spacing: 2px;
+            }
+            
+            .section {
+                padding: 30px 20px;
+            }
+            
+            .section-title {
+                font-size: 1.5em;
+            }
+            
+            .section-number {
+                width: 40px;
+                height: 40px;
+                font-size: 1.2em;
+            }
+            
+            .quick-ref {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 15px;
+            }
+            
+            .connection-flow {
+                flex-direction: column;
+            }
+            
+            .arrow {
+                transform: rotate(90deg);
+                margin: 10px 0;
+            }
+            
+            .device-box {
+                min-width: 100%;
+            }
+            
+            .pinout-visual {
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+            }
+            
+            .module-box {
+                min-width: 280px;
+            }
+            
+            .pin-row {
+                flex-wrap: nowrap;
+                overflow-x: auto;
+            }
+            
+            .pin {
+                min-width: 80px;
+                flex-shrink: 0;
+            }
+            
+            table {
+                display: block;
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+                white-space: nowrap;
+            }
+            
+            table th,
+            table td {
+                padding: 10px 8px;
+                font-size: 0.85em;
+            }
+            
+            .component-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 10px;
+            }
+            
+            .connection-summary {
+                grid-template-columns: 1fr;
+            }
+            
+            .code {
+                font-size: 0.8em;
+                overflow-x: auto;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .hero-section h1 {
+                font-size: 1.8em;
+                letter-spacing: 1px;
+            }
+            
+            .hero-section .subtitle {
+                font-size: 0.95em;
+            }
+            
+            .quick-ref {
+                grid-template-columns: 1fr;
+            }
+            
+            .section {
+                padding: 25px 15px;
+            }
+            
+            .card {
+                padding: 20px 15px;
+            }
+            
+            .component-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .pinout-visual {
+                justify-content: flex-start;
+            }
+            
+            .module-box {
+                min-width: 260px;
+                padding: 20px;
+            }
+            
+            .section-header {
+                flex-wrap: wrap;
+            }
+            
+            .section-number {
+                margin-bottom: 10px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .hero-section {
+                padding: 30px 15px;
+            }
+            
+            .hero-section h1 {
+                font-size: 1.5em;
+            }
+            
+            .section-title {
+                font-size: 1.3em;
+            }
+            
+            .card {
+                padding: 15px 12px;
+            }
+            
+            .device-box {
+                padding: 15px;
+            }
+            
+            .pin {
+                padding: 8px 10px;
+                font-size: 0.85em;
+            }
+            
+            .info-box,
+            .alert {
+                padding: 15px;
+                font-size: 0.9em;
+            }
+            
+            .nav-sidebar {
+                width: 100%;
+                max-width: 280px;
             }
         }
     </style>
 </head>
 <body>
-    <div class="nav-sidebar">
+    <div class="mobile-menu-toggle" onclick="toggleMobileMenu()">☰</div>
+    
+    <div class="nav-sidebar" id="navSidebar">
         <h3>Navigation</h3>
         <a href="#overview" class="nav-item active">What is BlueJammer?</a>
         <a href="#pinout" class="nav-item">Pinout Reference</a>
@@ -748,22 +960,22 @@
                             <!-- Top Row (4 pins) -->
                             <div>
                                 <div class="row-label" style="text-align: center; margin-bottom: 8px;">Top Row (Even Pins)</div>
-                                <div style="display: flex; gap: 10px; justify-content: center;">
-                                    <div class="pin power" style="flex: 1; max-width: 100px;">2 <strong>VCC</strong></div>
-                                    <div class="pin data" style="flex: 1; max-width: 100px;">4 <strong>CSN</strong></div>
-                                    <div class="pin data" style="flex: 1; max-width: 100px;">6 <strong>MOSI</strong></div>
-                                    <div class="pin unused" style="flex: 1; max-width: 100px;">8 <strong>IRQ</strong></div>
+                                <div style="display: flex; gap: 8px; justify-content: center; flex-wrap: wrap;">
+                                    <div class="pin power" style="min-width: 80px; flex: 1 1 auto; max-width: 120px;">2 <strong>VCC</strong></div>
+                                    <div class="pin data" style="min-width: 80px; flex: 1 1 auto; max-width: 120px;">4 <strong>CSN</strong></div>
+                                    <div class="pin data" style="min-width: 80px; flex: 1 1 auto; max-width: 120px;">6 <strong>MOSI</strong></div>
+                                    <div class="pin unused" style="min-width: 80px; flex: 1 1 auto; max-width: 120px;">8 <strong>IRQ</strong></div>
                                 </div>
                             </div>
                             
                             <!-- Bottom Row (4 pins) -->
                             <div>
                                 <div class="row-label" style="text-align: center; margin-bottom: 8px;">Bottom Row (Odd Pins)</div>
-                                <div style="display: flex; gap: 10px; justify-content: center;">
-                                    <div class="pin ground" style="flex: 1; max-width: 100px;">1 <strong>GND</strong></div>
-                                    <div class="pin data" style="flex: 1; max-width: 100px;">3 <strong>CE</strong></div>
-                                    <div class="pin data" style="flex: 1; max-width: 100px;">5 <strong>SCK</strong></div>
-                                    <div class="pin data" style="flex: 1; max-width: 100px;">7 <strong>MISO</strong></div>
+                                <div style="display: flex; gap: 8px; justify-content: center; flex-wrap: wrap;">
+                                    <div class="pin ground" style="min-width: 80px; flex: 1 1 auto; max-width: 120px;">1 <strong>GND</strong></div>
+                                    <div class="pin data" style="min-width: 80px; flex: 1 1 auto; max-width: 120px;">3 <strong>CE</strong></div>
+                                    <div class="pin data" style="min-width: 80px; flex: 1 1 auto; max-width: 120px;">5 <strong>SCK</strong></div>
+                                    <div class="pin data" style="min-width: 80px; flex: 1 1 auto; max-width: 120px;">7 <strong>MISO</strong></div>
                                 </div>
                             </div>
                         </div>
@@ -1200,6 +1412,33 @@ GPIO 5      →  OLED SCL
                     item.classList.add('active');
                 }
             });
+        });
+        
+        // Mobile menu toggle
+        function toggleMobileMenu() {
+            const sidebar = document.getElementById('navSidebar');
+            sidebar.classList.toggle('open');
+        }
+        
+        // Close mobile menu when clicking a nav item
+        document.querySelectorAll('.nav-item').forEach(item => {
+            item.addEventListener('click', () => {
+                if (window.innerWidth <= 1024) {
+                    document.getElementById('navSidebar').classList.remove('open');
+                }
+            });
+        });
+        
+        // Close mobile menu when clicking outside
+        document.addEventListener('click', (e) => {
+            const sidebar = document.getElementById('navSidebar');
+            const toggle = document.querySelector('.mobile-menu-toggle');
+            if (window.innerWidth <= 1024 && 
+                !sidebar.contains(e.target) && 
+                !toggle.contains(e.target) &&
+                sidebar.classList.contains('open')) {
+                sidebar.classList.remove('open');
+            }
         });
     </script>
 </body>
