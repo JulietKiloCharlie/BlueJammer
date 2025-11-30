@@ -1,0 +1,1207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ESP32-BlueJammer | Assembly Guide</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: #050810;
+            background-image: 
+                radial-gradient(circle at 20% 30%, rgba(0, 150, 255, 0.08) 0%, transparent 50%),
+                radial-gradient(circle at 80% 70%, rgba(0, 150, 255, 0.05) 0%, transparent 50%);
+            color: #e0e7ff;
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+        
+        .nav-sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 280px;
+            height: 100vh;
+            background: rgba(5, 8, 16, 0.95);
+            border-right: 1px solid rgba(0, 150, 255, 0.2);
+            padding: 30px 20px 100px 20px;
+            overflow-y: auto;
+            z-index: 1000;
+            backdrop-filter: blur(10px);
+        }
+        
+        .nav-sidebar h3 {
+            color: #00aaff;
+            font-size: 0.85em;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+        
+        .nav-sidebar .credit {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            right: 20px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(0, 150, 255, 0.2);
+            font-size: 0.8em;
+            color: #7c8fc7;
+            text-align: center;
+        }
+        
+        .nav-sidebar .credit strong {
+            color: #00aaff;
+            display: block;
+            margin-top: 5px;
+            font-size: 1.1em;
+            letter-spacing: 1px;
+        }
+        
+        .nav-item {
+            display: block;
+            padding: 12px 15px;
+            margin: 5px 0;
+            color: #9ca3d8;
+            text-decoration: none;
+            border-left: 2px solid transparent;
+            transition: all 0.3s;
+            font-size: 0.9em;
+            border-radius: 3px;
+        }
+        
+        .nav-item:hover {
+            background: rgba(0, 150, 255, 0.1);
+            border-left-color: #00aaff;
+            color: #ffffff;
+        }
+        
+        .nav-item.active {
+            background: rgba(0, 150, 255, 0.15);
+            border-left-color: #00aaff;
+            color: #00aaff;
+        }
+        
+        .main-content {
+            margin-left: 280px;
+            padding: 0;
+        }
+        
+        .hero-section {
+            background: linear-gradient(135deg, rgba(0, 150, 255, 0.1) 0%, rgba(5, 8, 16, 0.9) 100%);
+            border-bottom: 1px solid rgba(0, 150, 255, 0.2);
+            padding: 60px 50px;
+            text-align: center;
+        }
+        
+        .hero-section h1 {
+            font-size: 3.5em;
+            font-weight: 300;
+            letter-spacing: 3px;
+            color: #ffffff;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+        }
+        
+        .hero-section .subtitle {
+            font-size: 1.1em;
+            color: #7c8fc7;
+            letter-spacing: 1px;
+            margin-bottom: 30px;
+        }
+        
+        .quick-ref {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 40px;
+            max-width: 1200px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .ref-card {
+            background: rgba(0, 150, 255, 0.08);
+            border: 1px solid rgba(0, 150, 255, 0.2);
+            border-radius: 6px;
+            padding: 20px;
+            text-align: center;
+        }
+        
+        .ref-card .icon {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        
+        .ref-card h4 {
+            color: #00aaff;
+            font-size: 0.9em;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+        }
+        
+        .ref-card p {
+            color: #9ca3d8;
+            font-size: 0.85em;
+        }
+        
+        .section {
+            padding: 50px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .section-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid rgba(0, 150, 255, 0.2);
+            position: relative;
+        }
+        
+        .section-header::after {
+            content: '';
+            position: absolute;
+            bottom: -1px;
+            left: 0;
+            width: 100px;
+            height: 2px;
+            background: linear-gradient(90deg, #00aaff, transparent);
+        }
+        
+        .section-number {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #00aaff 0%, #0066cc 100%);
+            color: white;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5em;
+            font-weight: 600;
+            margin-right: 20px;
+            font-family: 'JetBrains Mono', monospace;
+            box-shadow: 0 4px 15px rgba(0, 150, 255, 0.3);
+        }
+        
+        .section-title {
+            font-size: 2em;
+            font-weight: 400;
+            color: #ffffff;
+            letter-spacing: 1px;
+        }
+        
+        .card {
+            background: rgba(0, 150, 255, 0.05);
+            border: 1px solid rgba(0, 150, 255, 0.2);
+            border-radius: 8px;
+            padding: 30px;
+            margin: 25px 0;
+            transition: all 0.3s;
+        }
+        
+        .card:hover {
+            background: rgba(0, 150, 255, 0.08);
+            border-color: rgba(0, 150, 255, 0.4);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 150, 255, 0.15);
+        }
+        
+        .card h3 {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .card h3::before {
+            content: '▶';
+            color: #00aaff;
+            font-size: 0.7em;
+        }
+        
+        .pinout-visual {
+            display: flex;
+            justify-content: center;
+            margin: 30px 0;
+        }
+        
+        .module-box {
+            background: rgba(10, 15, 30, 0.8);
+            border: 2px solid rgba(0, 150, 255, 0.3);
+            border-radius: 8px;
+            padding: 25px;
+            min-width: 300px;
+        }
+        
+        .module-title {
+            color: #00aaff;
+            text-align: center;
+            font-weight: 500;
+            margin-bottom: 15px;
+            font-size: 1.1em;
+            letter-spacing: 0.5px;
+        }
+        
+        .antenna-indicator {
+            background: rgba(255, 50, 50, 0.2);
+            border: 1px solid rgba(255, 50, 50, 0.4);
+            color: #ff6b6b;
+            padding: 8px;
+            text-align: center;
+            border-radius: 4px;
+            margin-bottom: 20px;
+            font-size: 0.85em;
+            font-family: 'JetBrains Mono', monospace;
+        }
+        
+        .pin-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .pin-row {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        
+        .module-visual-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .row-label {
+            color: #7c8fc7;
+            font-size: 0.75em;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 5px;
+            font-family: 'JetBrains Mono', monospace;
+        }
+        
+        .pin {
+            background: rgba(0, 150, 255, 0.1);
+            border: 1px solid rgba(0, 150, 255, 0.3);
+            border-radius: 4px;
+            padding: 10px 15px;
+            display: flex;
+            justify-content: space-between;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9em;
+        }
+        
+        .pin.power { border-color: rgba(255, 50, 50, 0.5); background: rgba(255, 50, 50, 0.1); color: #ff8a8a; }
+        .pin.ground { border-color: rgba(0, 150, 255, 0.5); background: rgba(0, 150, 255, 0.15); color: #7cafff; }
+        .pin.data { border-color: rgba(255, 200, 0, 0.5); background: rgba(255, 200, 0, 0.1); color: #ffd54f; }
+        .pin.unused { border-color: rgba(100, 100, 100, 0.3); background: rgba(100, 100, 100, 0.05); color: #9ca3d8; opacity: 0.6; }
+        
+        .connection-flow {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+            margin: 30px 0;
+            flex-wrap: wrap;
+        }
+        
+        .device-box {
+            background: rgba(0, 150, 255, 0.08);
+            border: 1px solid rgba(0, 150, 255, 0.3);
+            border-radius: 6px;
+            padding: 20px;
+            min-width: 200px;
+        }
+        
+        .device-title {
+            color: #00aaff;
+            text-align: center;
+            font-weight: 500;
+            margin-bottom: 15px;
+            font-size: 0.95em;
+        }
+        
+        .arrow {
+            color: #00aaff;
+            font-size: 2em;
+            font-weight: 300;
+        }
+        
+        .alert {
+            background: rgba(255, 50, 50, 0.1);
+            border-left: 4px solid #ff3232;
+            border-right: 1px solid rgba(255, 50, 50, 0.2);
+            border-top: 1px solid rgba(255, 50, 50, 0.2);
+            border-bottom: 1px solid rgba(255, 50, 50, 0.2);
+            padding: 20px;
+            margin: 25px 0;
+            border-radius: 4px;
+        }
+        
+        .alert strong {
+            color: #ff6b6b;
+            display: block;
+            margin-bottom: 10px;
+        }
+        
+        .info-box {
+            background: rgba(0, 150, 255, 0.1);
+            border-left: 4px solid #00aaff;
+            border-right: 1px solid rgba(0, 150, 255, 0.2);
+            border-top: 1px solid rgba(0, 150, 255, 0.2);
+            border-bottom: 1px solid rgba(0, 150, 255, 0.2);
+            padding: 20px;
+            margin: 25px 0;
+            border-radius: 4px;
+        }
+        
+        .info-box strong {
+            color: #00aaff;
+            display: block;
+            margin-bottom: 10px;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background: rgba(0, 150, 255, 0.03);
+            border: 1px solid rgba(0, 150, 255, 0.2);
+        }
+        
+        table th {
+            background: rgba(0, 150, 255, 0.15);
+            color: #ffffff;
+            padding: 14px;
+            text-align: left;
+            font-weight: 500;
+            border-bottom: 2px solid rgba(0, 150, 255, 0.3);
+        }
+        
+        table td {
+            border: 1px solid rgba(0, 150, 255, 0.1);
+            padding: 12px 14px;
+            color: #e0e7ff;
+        }
+        
+        table tr:nth-child(even) {
+            background: rgba(0, 150, 255, 0.02);
+        }
+        
+        table tr:hover {
+            background: rgba(0, 150, 255, 0.08);
+        }
+        
+        .code {
+            background: #0a0f1a;
+            border: 1px solid rgba(0, 150, 255, 0.2);
+            border-radius: 4px;
+            padding: 15px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9em;
+            color: #7cafff;
+            overflow-x: auto;
+            margin: 15px 0;
+            line-height: 1.8;
+        }
+        
+        .checklist {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .checklist li {
+            padding: 12px 15px 12px 45px;
+            margin: 8px 0;
+            background: rgba(0, 150, 255, 0.05);
+            border: 1px solid rgba(0, 150, 255, 0.1);
+            border-radius: 4px;
+            position: relative;
+            color: #e0e7ff;
+        }
+        
+        .checklist li:before {
+            content: "□";
+            position: absolute;
+            left: 18px;
+            font-size: 1.3em;
+            color: #00aaff;
+            font-family: 'JetBrains Mono', monospace;
+        }
+        
+        .badge {
+            display: inline-block;
+            padding: 4px 10px;
+            background: rgba(0, 150, 255, 0.2);
+            border: 1px solid rgba(0, 150, 255, 0.4);
+            border-radius: 3px;
+            font-size: 0.75em;
+            color: #7cafff;
+            font-family: 'JetBrains Mono', monospace;
+            margin: 0 5px;
+        }
+        
+        .status-indicator {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #00ff00;
+            margin-right: 8px;
+            box-shadow: 0 0 8px rgba(0, 255, 0, 0.5);
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        
+        .tooltip {
+            position: relative;
+            cursor: help;
+        }
+        
+        .tooltip:hover::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 8px 12px;
+            background: rgba(0, 0, 0, 0.9);
+            color: #ffffff;
+            border-radius: 4px;
+            font-size: 0.8em;
+            white-space: nowrap;
+            z-index: 1000;
+            margin-bottom: 5px;
+        }
+        
+        .component-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .component-card {
+            background: rgba(0, 150, 255, 0.05);
+            border: 1px solid rgba(0, 150, 255, 0.2);
+            border-radius: 6px;
+            padding: 15px;
+            text-align: center;
+        }
+        
+        .component-card h4 {
+            color: #00aaff;
+            font-size: 0.9em;
+            margin-bottom: 8px;
+        }
+        
+        .component-card p {
+            color: #9ca3d8;
+            font-size: 0.85em;
+        }
+        
+        .progress-bar {
+            height: 4px;
+            background: rgba(0, 150, 255, 0.1);
+            border-radius: 2px;
+            margin: 30px 0;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #00aaff 0%, #0066cc 100%);
+            transition: width 0.3s;
+        }
+        
+        .connection-summary {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin: 25px 0;
+        }
+        
+        .summary-card {
+            background: rgba(0, 150, 255, 0.05);
+            border: 1px solid rgba(0, 150, 255, 0.2);
+            border-radius: 6px;
+            padding: 20px;
+        }
+        
+        .summary-card h4 {
+            color: #00aaff;
+            margin-bottom: 15px;
+            font-size: 1em;
+            border-bottom: 1px solid rgba(0, 150, 255, 0.2);
+            padding-bottom: 10px;
+        }
+        
+        @media (max-width: 1024px) {
+            .nav-sidebar {
+                transform: translateX(-100%);
+                transition: transform 0.3s;
+            }
+            .main-content {
+                margin-left: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="nav-sidebar">
+        <h3>Navigation</h3>
+        <a href="#overview" class="nav-item active">What is BlueJammer?</a>
+        <a href="#pinout" class="nav-item">Pinout Reference</a>
+        <a href="#components" class="nav-item">Components</a>
+        <a href="#power" class="nav-item">Power Setup</a>
+        <a href="#module1" class="nav-item">Module 1 (HSPI)</a>
+        <a href="#module2" class="nav-item">Module 2 (VSPI)</a>
+        <a href="#antennas" class="nav-item">Antennas</a>
+        <a href="#oled" class="nav-item">OLED Display</a>
+        <a href="#firmware" class="nav-item">Firmware</a>
+        <a href="#test" class="nav-item">Testing</a>
+        <div class="credit">
+            <div>Developed by</div>
+            <strong>KaliShamrock</strong>
+        </div>
+    </div>
+    
+    <div class="main-content">
+        <div class="hero-section">
+            <h1>ESP32-BlueJammer</h1>
+            <p class="subtitle">2.4GHz Spectrum Disruption System | Technical Assembly Guide</p>
+            <p style="color: #7c8fc7; margin-top: 20px; font-size: 0.9em;">Developed by <span style="color: #00aaff; font-weight: 500;">KaliShamrock</span></p>
+            <div style="margin-top: 30px; padding: 20px; background: rgba(0, 150, 255, 0.1); border: 1px solid rgba(0, 150, 255, 0.3); border-radius: 6px; max-width: 800px; margin-left: auto; margin-right: auto;">
+                <p style="color: #e0e7ff; font-size: 0.95em; line-height: 1.7;">
+                    A compact, portable device capable of disrupting wireless CCTV systems, drone control signals, 
+                    Bluetooth communications, WiFi networks, and other 2.4GHz wireless devices within a 30+ meter range.
+                </p>
+            </div>
+            
+            <div class="quick-ref">
+                <div class="ref-card">
+                    <div class="icon">🔌</div>
+                    <h4>Power</h4>
+                    <p>3.3V Only<br>10µF Caps</p>
+                </div>
+                <div class="ref-card">
+                    <div class="icon">📡</div>
+                    <h4>Modules</h4>
+                    <p>2× nRF24L01<br>PA+LNA</p>
+                </div>
+                <div class="ref-card">
+                    <div class="icon">🖥️</div>
+                    <h4>Display</h4>
+                    <p>1.3" OLED<br>I2C Interface</p>
+                </div>
+                <div class="ref-card">
+                    <div class="icon">⚡</div>
+                    <h4>Firmware</h4>
+                    <p>Web Flasher<br>Multiple Options</p>
+                </div>
+            </div>
+        </div>
+        
+        <div id="overview" class="section">
+            <div class="section-header">
+                <div class="section-number">?</div>
+                <h2 class="section-title">What is ESP32-BlueJammer?</h2>
+            </div>
+            
+            <div class="card">
+                <h3 style="color: #00aaff; margin-bottom: 20px; font-size: 1.3em;">Advanced 2.4GHz Spectrum Disruption System</h3>
+                
+                <p style="color: #e0e7ff; font-size: 1.05em; line-height: 1.8; margin-bottom: 25px;">
+                    The ESP32-BlueJammer is a compact, portable wireless disruption device designed for security testing and controlled interference operations. 
+                    Operating within the 2.4GHz ISM band, it generates targeted interference signals capable of disrupting a wide range of wireless communications.
+                </p>
+                
+                <div class="component-grid" style="margin: 30px 0;">
+                    <div class="component-card" style="background: rgba(255, 50, 50, 0.1); border-color: rgba(255, 50, 50, 0.3);">
+                        <h4 style="color: #ff6b6b;">📹 Wireless CCTV</h4>
+                        <p>Disrupts 2.4GHz security cameras and surveillance systems</p>
+                    </div>
+                    <div class="component-card" style="background: rgba(255, 50, 50, 0.1); border-color: rgba(255, 50, 50, 0.3);">
+                        <h4 style="color: #ff6b6b;">🚁 Drones & RC</h4>
+                        <p>Interferes with drone control signals and remote control devices</p>
+                    </div>
+                    <div class="component-card" style="background: rgba(255, 50, 50, 0.1); border-color: rgba(255, 50, 50, 0.3);">
+                        <h4 style="color: #ff6b6b;">📱 Bluetooth Devices</h4>
+                        <p>Jams Bluetooth speakers, headphones, and wireless peripherals</p>
+                    </div>
+                    <div class="component-card" style="background: rgba(255, 50, 50, 0.1); border-color: rgba(255, 50, 50, 0.3);">
+                        <h4 style="color: #ff6b6b;">📶 WiFi Networks</h4>
+                        <p>Disrupts 2.4GHz WiFi communications and IoT devices</p>
+                    </div>
+                    <div class="component-card" style="background: rgba(255, 50, 50, 0.1); border-color: rgba(255, 50, 50, 0.3);">
+                        <h4 style="color: #ff6b6b;">🎤 Wireless Audio</h4>
+                        <p>Interferes with wireless microphones and audio transmitters</p>
+                    </div>
+                    <div class="component-card" style="background: rgba(255, 50, 50, 0.1); border-color: rgba(255, 50, 50, 0.3);">
+                        <h4 style="color: #ff6b6b;">⌨️ Input Devices</h4>
+                        <p>Disrupts wireless keyboards, mice, and gaming controllers</p>
+                    </div>
+                </div>
+                
+                <div class="info-box" style="margin-top: 30px; background: rgba(0, 150, 255, 0.1);">
+                    <strong style="color: #00aaff;">🔧 Technical Specifications</strong>
+                    <div style="margin-top: 15px; display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px;">
+                        <div>
+                            <strong style="color: #7cafff;">Frequency Range:</strong>
+                            <p style="color: #9ca3d8; margin-top: 5px;">2.400 - 2.525 GHz (2.4GHz ISM Band)</p>
+                        </div>
+                        <div>
+                            <strong style="color: #7cafff;">Effective Range:</strong>
+                            <p style="color: #9ca3d8; margin-top: 5px;">30+ meters (extendable with better antennas)</p>
+                        </div>
+                        <div>
+                            <strong style="color: #7cafff;">Power Output:</strong>
+                            <p style="color: #9ca3d8; margin-top: 5px;">Dual nRF24L01+PA+LNA modules</p>
+                        </div>
+                        <div>
+                            <strong style="color: #7cafff;">Operation Mode:</strong>
+                            <p style="color: #9ca3d8; margin-top: 5px;">Continuous interference + packet injection</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="info-box" style="margin-top: 25px;">
+                    <strong style="color: #00aaff;">🎯 Operational Capabilities</strong>
+                    <ul style="margin-left: 25px; margin-top: 12px; color: #e0e7ff; line-height: 2;">
+                        <li><strong>Multi-Protocol Disruption:</strong> Simultaneously targets Bluetooth, BLE, WiFi, and RC protocols</li>
+                        <li><strong>Frequency Hopping Counter:</strong> Disrupts adaptive frequency hopping systems</li>
+                        <li><strong>Broad Spectrum Coverage:</strong> Covers entire 2.4GHz band with dual-module architecture</li>
+                        <li><strong>Portable Design:</strong> Compact form factor suitable for field operations</li>
+                        <li><strong>Selective Targeting:</strong> Configurable firmware allows protocol-specific jamming</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="alert" style="margin-top: 30px;">
+                <strong>⚠️ VOLTAGE WARNING</strong>
+                nRF24 modules require <strong>3.3V</strong> power. Connecting to 5V will permanently damage modules.
+            </div>
+            
+            <div class="alert">
+                <strong>⚠️ PIN LOCATION</strong>
+                Pin 1 (GND) is in the <strong>BOTTOM row, leftmost position</strong>. Pins alternate: Bottom = odd (1,3,5,7), Top = even (2,4,6,8).
+            </div>
+            
+            <div class="alert" style="background: rgba(184, 28, 28, 0.15); border-left-color: #b81c1c;">
+                <strong>⚖️ LEGAL NOTICE</strong>
+                Jamming devices are illegal in many jurisdictions. This device is intended <strong>ONLY</strong> for:
+                <ul style="margin-left: 25px; margin-top: 10px; color: #ffb3b3;">
+                    <li>Authorized security testing in controlled environments</li>
+                    <li>Educational and research purposes</li>
+                    <li>Compliance testing in licensed facilities</li>
+                </ul>
+                <p style="margin-top: 10px; color: #ffb3b3;">
+                    Unauthorized use can result in severe legal consequences including fines and criminal charges. 
+                    Interference with emergency communications is strictly prohibited.
+                </p>
+            </div>
+        </div>
+        
+        <div id="pinout" class="section">
+            <div class="section-header">
+                <div class="section-number">0</div>
+                <h2 class="section-title">Pinout Reference</h2>
+            </div>
+            
+            <div class="card">
+                <p style="color: #9ca3d8; margin-bottom: 20px;">nRF24L01 modules don't have labeled pins. Use this diagram to identify each pin.</p>
+                
+                <div class="pinout-visual">
+                    <div class="module-box" style="max-width: 500px;">
+                        <div class="module-title">nRF24L01+PA+LNA Module</div>
+                        
+                        <!-- Antenna at top -->
+                        <div style="text-align: center; margin-bottom: 20px;">
+                            <div class="antenna-indicator" style="display: inline-block; min-width: 200px;">📡 ANTENNA CONNECTOR</div>
+                        </div>
+                        
+                        <!-- Module body visual -->
+                        <div style="background: rgba(0, 150, 255, 0.05); border: 1px solid rgba(0, 150, 255, 0.2); border-radius: 4px; padding: 15px; margin-bottom: 20px; text-align: center; color: #7c8fc7; font-size: 0.85em;">
+                            Module PCB
+                        </div>
+                        
+                        <!-- Pins - 2 rows of 4 -->
+                        <div style="display: flex; flex-direction: column; gap: 12px;">
+                            <!-- Top Row (4 pins) -->
+                            <div>
+                                <div class="row-label" style="text-align: center; margin-bottom: 8px;">Top Row (Even Pins)</div>
+                                <div style="display: flex; gap: 10px; justify-content: center;">
+                                    <div class="pin power" style="flex: 1; max-width: 100px;">2 <strong>VCC</strong></div>
+                                    <div class="pin data" style="flex: 1; max-width: 100px;">4 <strong>CSN</strong></div>
+                                    <div class="pin data" style="flex: 1; max-width: 100px;">6 <strong>MOSI</strong></div>
+                                    <div class="pin unused" style="flex: 1; max-width: 100px;">8 <strong>IRQ</strong></div>
+                                </div>
+                            </div>
+                            
+                            <!-- Bottom Row (4 pins) -->
+                            <div>
+                                <div class="row-label" style="text-align: center; margin-bottom: 8px;">Bottom Row (Odd Pins)</div>
+                                <div style="display: flex; gap: 10px; justify-content: center;">
+                                    <div class="pin ground" style="flex: 1; max-width: 100px;">1 <strong>GND</strong></div>
+                                    <div class="pin data" style="flex: 1; max-width: 100px;">3 <strong>CE</strong></div>
+                                    <div class="pin data" style="flex: 1; max-width: 100px;">5 <strong>SCK</strong></div>
+                                    <div class="pin data" style="flex: 1; max-width: 100px;">7 <strong>MISO</strong></div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Orientation note -->
+                        <div style="margin-top: 20px; padding: 12px; background: rgba(0, 150, 255, 0.1); border: 1px solid rgba(0, 150, 255, 0.3); border-radius: 4px; font-size: 0.85em; color: #9ca3d8; text-align: center;">
+                            <strong style="color: #00aaff;">View:</strong> Antenna connector at top, pins at bottom facing outward
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="info-box">
+                    <strong>💡 Pin Layout Summary</strong>
+                    <p><strong>Physical Layout:</strong> Antenna connector at TOP of module, 8 pins at BOTTOM in 2 horizontal rows.</p>
+                    <p style="margin-top: 8px;"><strong>Top Row (4 pins, left to right):</strong> Pin 2 (VCC), Pin 4 (CSN), Pin 6 (MOSI), Pin 8 (IRQ)</p>
+                    <p><strong>Bottom Row (4 pins, left to right):</strong> Pin 1 (GND), Pin 3 (CE), Pin 5 (SCK), Pin 7 (MISO)</p>
+                </div>
+                
+                <table>
+                    <tr>
+                        <th>Pin</th>
+                        <th>Name</th>
+                        <th>Location</th>
+                        <th>Function</th>
+                    </tr>
+                    <tr><td><strong>1</strong></td><td><strong>GND</strong></td><td>Bottom, left</td><td>Ground</td></tr>
+                    <tr><td><strong>2</strong></td><td><strong>VCC</strong></td><td>Top, left</td><td>Power (3.3V)</td></tr>
+                    <tr><td><strong>3</strong></td><td><strong>CE</strong></td><td>Bottom, 2nd</td><td>Chip Enable</td></tr>
+                    <tr><td><strong>4</strong></td><td><strong>CSN</strong></td><td>Top, 2nd</td><td>Chip Select</td></tr>
+                    <tr><td><strong>5</strong></td><td><strong>SCK</strong></td><td>Bottom, 3rd</td><td>Serial Clock</td></tr>
+                    <tr><td><strong>6</strong></td><td><strong>MOSI</strong></td><td>Top, 3rd</td><td>Master Out</td></tr>
+                    <tr><td><strong>7</strong></td><td><strong>MISO</strong></td><td>Bottom, right</td><td>Master In</td></tr>
+                    <tr><td><strong>8</strong></td><td><strong>IRQ</strong></td><td>Top, right</td><td>Not Used</td></tr>
+                </table>
+            </div>
+        </div>
+        
+        <div id="components" class="section">
+            <div class="section-header">
+                <div class="section-number">1</div>
+                <h2 class="section-title">Components</h2>
+            </div>
+            
+            <div class="component-grid">
+                <div class="component-card">
+                    <h4>ESP32 DevKit</h4>
+                    <p>38+ pins<br>USB port<br>Antenna connector</p>
+                </div>
+                <div class="component-card">
+                    <h4>nRF24 Module 1</h4>
+                    <p>PA+LNA<br>Antenna connector</p>
+                </div>
+                <div class="component-card">
+                    <h4>nRF24 Module 2</h4>
+                    <p>PA+LNA<br>Antenna connector</p>
+                </div>
+                <div class="component-card">
+                    <h4>Capacitors</h4>
+                    <p>2× 10µF<br>100V rating</p>
+                </div>
+                <div class="component-card">
+                    <h4>OLED Display</h4>
+                    <p>1.3" I2C<br>SSD1306</p>
+                </div>
+                <div class="component-card">
+                    <h4>Antennas</h4>
+                    <p>2× 2.4GHz<br>Compatible</p>
+                </div>
+            </div>
+        </div>
+        
+        <div id="power" class="section">
+            <div class="section-header">
+                <div class="section-number">2</div>
+                <h2 class="section-title">Power Connections</h2>
+            </div>
+            
+            <div class="card">
+                <h3 style="color: #00aaff; margin-bottom: 20px; display: flex; align-items: center; gap: 10px;"><span style="color: #00aaff; font-size: 0.7em;">▶</span> Module 1 (HSPI)</h3>
+                <div class="connection-flow">
+                    <div class="device-box">
+                        <div class="device-title">ESP32</div>
+                        <div class="pin power">3.3V</div>
+                        <div class="pin ground">GND</div>
+                    </div>
+                    <div class="arrow">→</div>
+                    <div class="device-box">
+                        <div class="device-title">nRF24 Module 1</div>
+                        <div class="pin power">Pin 2 (VCC)</div>
+                        <div class="pin ground">Pin 1 (GND)</div>
+                    </div>
+                </div>
+                <div class="info-box">
+                    <strong>Capacitor:</strong> Connect 10µF capacitor: <span class="badge">+</span> to Pin 2 (VCC), <span class="badge">-</span> to Pin 1 (GND)
+                </div>
+            </div>
+            
+            <div class="card">
+                <h3 style="color: #00aaff; margin-bottom: 20px; display: flex; align-items: center; gap: 10px;"><span style="color: #00aaff; font-size: 0.7em;">▶</span> Module 2 (VSPI)</h3>
+                <div class="connection-flow">
+                    <div class="device-box">
+                        <div class="device-title">ESP32</div>
+                        <div class="pin power">3.3V</div>
+                        <div class="pin ground">GND</div>
+                    </div>
+                    <div class="arrow">→</div>
+                    <div class="device-box">
+                        <div class="device-title">nRF24 Module 2</div>
+                        <div class="pin power">Pin 2 (VCC)</div>
+                        <div class="pin ground">Pin 1 (GND)</div>
+                    </div>
+                </div>
+                <div class="info-box">
+                    <strong>Capacitor:</strong> Connect 10µF capacitor: <span class="badge">+</span> to Pin 2 (VCC), <span class="badge">-</span> to Pin 1 (GND)
+                </div>
+            </div>
+        </div>
+        
+        <div id="module1" class="section">
+            <div class="section-header">
+                <div class="section-number">3</div>
+                <h2 class="section-title">Module 1 - Data (HSPI)</h2>
+            </div>
+            
+            <div class="info-box" style="margin-bottom: 25px; background: rgba(0, 255, 0, 0.1); border-left-color: #00ff00;">
+                <strong style="color: #00ff00;">✓ Verified Firmware Compatibility</strong>
+                <p style="margin-top: 10px; color: #e0e7ff;">These GPIO pin assignments match the standard BlueJammer firmware exactly. The firmware from the web flasher will work perfectly.</p>
+            </div>
+            
+            <div class="card">
+                <div class="connection-flow">
+                    <div class="device-box">
+                        <div class="device-title">ESP32 GPIO Pins</div>
+                        <div class="pin data">GPIO 16</div>
+                        <div class="pin data">GPIO 15</div>
+                        <div class="pin data">GPIO 14</div>
+                        <div class="pin data">GPIO 13</div>
+                        <div class="pin data">GPIO 12</div>
+                    </div>
+                    <div class="arrow">→</div>
+                    <div class="device-box">
+                        <div class="device-title">nRF24 Module 1</div>
+                        <div class="pin data">Pin 3 (CE)</div>
+                        <div class="pin data">Pin 4 (CSN)</div>
+                        <div class="pin data">Pin 5 (SCK)</div>
+                        <div class="pin data">Pin 6 (MOSI)</div>
+                        <div class="pin data">Pin 7 (MISO)</div>
+                    </div>
+                </div>
+                
+                <table>
+                    <tr>
+                        <th>ESP32 GPIO</th>
+                        <th>→</th>
+                        <th>nRF24 Pin</th>
+                        <th>Pin Name</th>
+                        <th>Function</th>
+                    </tr>
+                    <tr><td><strong>GPIO 16</strong></td><td>→</td><td>Pin 3</td><td>CE</td><td>Chip Enable</td></tr>
+                    <tr><td><strong>GPIO 15</strong></td><td>→</td><td>Pin 4</td><td>CSN</td><td>Chip Select</td></tr>
+                    <tr><td><strong>GPIO 14</strong></td><td>→</td><td>Pin 5</td><td>SCK</td><td>Serial Clock</td></tr>
+                    <tr><td><strong>GPIO 13</strong></td><td>→</td><td>Pin 6</td><td>MOSI</td><td>Master Out Slave In</td></tr>
+                    <tr><td><strong>GPIO 12</strong></td><td>→</td><td>Pin 7</td><td>MISO</td><td>Master In Slave Out</td></tr>
+                </table>
+            </div>
+        </div>
+        
+        <div id="module2" class="section">
+            <div class="section-header">
+                <div class="section-number">4</div>
+                <h2 class="section-title">Module 2 - Data (VSPI)</h2>
+            </div>
+            
+            <div class="info-box" style="margin-bottom: 25px; background: rgba(0, 255, 0, 0.1); border-left-color: #00ff00;">
+                <strong style="color: #00ff00;">✓ Verified Firmware Compatibility</strong>
+                <p style="margin-top: 10px; color: #e0e7ff;">These GPIO pin assignments match the standard BlueJammer firmware exactly. The firmware from the web flasher will work perfectly.</p>
+            </div>
+            
+            <div class="card">
+                <div class="connection-flow">
+                    <div class="device-box">
+                        <div class="device-title">ESP32 GPIO Pins</div>
+                        <div class="pin data">GPIO 22</div>
+                        <div class="pin data">GPIO 21</div>
+                        <div class="pin data">GPIO 18</div>
+                        <div class="pin data">GPIO 23</div>
+                        <div class="pin data">GPIO 19</div>
+                    </div>
+                    <div class="arrow">→</div>
+                    <div class="device-box">
+                        <div class="device-title">nRF24 Module 2</div>
+                        <div class="pin data">Pin 3 (CE)</div>
+                        <div class="pin data">Pin 4 (CSN)</div>
+                        <div class="pin data">Pin 5 (SCK)</div>
+                        <div class="pin data">Pin 6 (MOSI)</div>
+                        <div class="pin data">Pin 7 (MISO)</div>
+                    </div>
+                </div>
+                
+                <table>
+                    <tr>
+                        <th>ESP32 GPIO</th>
+                        <th>→</th>
+                        <th>nRF24 Pin</th>
+                        <th>Pin Name</th>
+                        <th>Function</th>
+                    </tr>
+                    <tr><td><strong>GPIO 22</strong></td><td>→</td><td>Pin 3</td><td>CE</td><td>Chip Enable</td></tr>
+                    <tr><td><strong>GPIO 21</strong></td><td>→</td><td>Pin 4</td><td>CSN</td><td>Chip Select</td></tr>
+                    <tr><td><strong>GPIO 18</strong></td><td>→</td><td>Pin 5</td><td>SCK</td><td>Serial Clock</td></tr>
+                    <tr><td><strong>GPIO 23</strong></td><td>→</td><td>Pin 6</td><td>MOSI</td><td>Master Out Slave In</td></tr>
+                    <tr><td><strong>GPIO 19</strong></td><td>→</td><td>Pin 7</td><td>MISO</td><td>Master In Slave Out</td></tr>
+                </table>
+            </div>
+        </div>
+        
+        <div id="antennas" class="section">
+            <div class="section-header">
+                <div class="section-number">5</div>
+                <h2 class="section-title">Antennas</h2>
+            </div>
+            
+            <div class="card">
+                <ul class="checklist">
+                    <li>Attach Antenna 1 to nRF24 Module 1 connector</li>
+                    <li>Attach Antenna 2 to nRF24 Module 2 connector</li>
+                    <li>Ensure antennas are securely connected and oriented vertically</li>
+                </ul>
+            </div>
+        </div>
+        
+        <div id="oled" class="section">
+            <div class="section-header">
+                <div class="section-number">6</div>
+                <h2 class="section-title">OLED Display (Optional)</h2>
+            </div>
+            
+            <div class="card">
+                <div class="connection-flow">
+                    <div class="device-box">
+                        <div class="device-title">ESP32</div>
+                        <div class="pin power">3.3V</div>
+                        <div class="pin ground">GND</div>
+                        <div class="pin data">GPIO 4</div>
+                        <div class="pin data">GPIO 5</div>
+                    </div>
+                    <div class="arrow">→</div>
+                    <div class="device-box">
+                        <div class="device-title">1.3" OLED</div>
+                        <div class="pin power">VCC</div>
+                        <div class="pin ground">GND</div>
+                        <div class="pin data">SDA</div>
+                        <div class="pin data">SCL</div>
+                    </div>
+                </div>
+                
+                <div class="info-box">
+                    <strong>💡 OLED Compatibility</strong>
+                    <p>Your 1.3" OLED may work with "0.96" OLED" firmware if it uses SSD1306 driver. Try it first, or use "Generic" firmware if display doesn't work.</p>
+                </div>
+            </div>
+        </div>
+        
+        <div id="firmware" class="section">
+            <div class="section-header">
+                <div class="section-number">7</div>
+                <h2 class="section-title">Firmware Installation</h2>
+            </div>
+            
+            <div class="info-box" style="background: rgba(0, 255, 0, 0.1); border-left-color: #00ff00; margin-bottom: 25px;">
+                <strong style="color: #00ff00;">✓ Firmware Compatibility Verified</strong>
+                <p style="margin-top: 10px; color: #e0e7ff;">All GPIO pin assignments in this guide match the standard BlueJammer firmware exactly. The firmware from the web flasher will work perfectly - no modifications needed!</p>
+                <div style="margin-top: 12px; padding: 12px; background: rgba(0, 0, 0, 0.2); border-radius: 3px; font-family: 'JetBrains Mono', monospace; font-size: 0.9em;">
+                    <div style="color: #00aaff; margin-bottom: 5px;"><strong>Module 1 (HSPI):</strong> GPIO 16, 15, 14, 13, 12</div>
+                    <div style="color: #00aaff;"><strong>Module 2 (VSPI):</strong> GPIO 22, 21, 18, 23, 19</div>
+                </div>
+            </div>
+            
+            <div class="card">
+                <h3 style="color: #00aaff; margin-bottom: 20px; display: flex; align-items: center; gap: 10px;"><span style="color: #00aaff; font-size: 0.7em;">▶</span> Web Flasher Method</h3>
+                <ol style="margin-left: 25px; color: #e0e7ff; line-height: 2;">
+                    <li>Connect ESP32 via USB (data-capable cable)</li>
+                    <li>Go to: <a href="https://esp32-bluejammerflasher.pages.dev" target="_blank" style="color: #00aaff;">esp32-bluejammerflasher.pages.dev</a></li>
+                    <li>Select <span class="badge">Generic</span> or <span class="badge">0.96" OLED</span></li>
+                    <li>Choose firmware variant (recommended: <strong>Combo-Channel-Select</strong>)</li>
+                    <li>Click "Connect" → Select ESP32</li>
+                    <li>Click "Flash" → Wait for completion</li>
+                </ol>
+            </div>
+            
+            <div class="info-box">
+                <strong>📋 Firmware Options</strong>
+                <ul style="margin-left: 25px; margin-top: 10px; color: #e0e7ff;">
+                    <li><strong>Combo-Channel-Select</strong> - All protocols (recommended)</li>
+                    <li>Bluetooth_80_CH - Bluetooth only</li>
+                    <li>BluetoothLowEnergy_40_CH - BLE only</li>
+                    <li>Bluetooth-WiFi_14-80_CH - BT + WiFi</li>
+                    <li>WiFi_14_CH - WiFi only</li>
+                    <li>2.4GHzRemoteControl_1-125_CH - RC devices</li>
+                </ul>
+            </div>
+        </div>
+        
+        <div id="test" class="section">
+            <div class="section-header">
+                <div class="section-number">8</div>
+                <h2 class="section-title">Testing</h2>
+            </div>
+            
+            <div class="card">
+                <ul class="checklist">
+                    <li>Connect USB cable to ESP32</li>
+                    <li>Power on device</li>
+                    <li>Verify ESP32 doesn't reset continuously</li>
+                    <li>Check nRF24 modules don't overheat</li>
+                    <li>Test with Bluetooth device nearby</li>
+                    <li>Test with 2.4GHz WiFi network</li>
+                    <li>Verify OLED display (if using OLED firmware)</li>
+                </ul>
+                
+                <div class="info-box" style="margin-top: 20px;">
+                    <strong><span class="status-indicator"></span>Success Indicators</strong>
+                    <p style="margin-top: 10px;">ESP32 powers on normally • Modules stay cool • Bluetooth devices disconnect • WiFi shows interference • OLED displays status (if compatible)</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="section">
+            <div class="card">
+                <div style="text-align: center; margin-bottom: 30px; padding-bottom: 20px; border-bottom: 1px solid rgba(0, 150, 255, 0.2);">
+                    <h3 style="color: #00aaff; margin-bottom: 10px;">Complete Connection Reference</h3>
+                    <p style="color: #7c8fc7; font-size: 0.9em;">All connections in one place for quick reference</p>
+                </div>
+                
+                <div class="connection-summary">
+                    <div class="summary-card">
+                        <h4>Module 1 (HSPI)</h4>
+                        <div class="code" style="margin: 0; font-size: 0.85em;">
+ESP32 3.3V  →  Pin 2 (VCC)
+ESP32 GND   →  Pin 1 (GND)
+GPIO 16     →  Pin 3 (CE)
+GPIO 15     →  Pin 4 (CSN)
+GPIO 14     →  Pin 5 (SCK)
+GPIO 13     →  Pin 6 (MOSI)
+GPIO 12     →  Pin 7 (MISO)
+                        </div>
+                        <div style="margin-top: 10px; font-size: 0.8em; color: #7c8fc7;">+ 10µF capacitor</div>
+                    </div>
+                    
+                    <div class="summary-card">
+                        <h4>Module 2 (VSPI)</h4>
+                        <div class="code" style="margin: 0; font-size: 0.85em;">
+ESP32 3.3V  →  Pin 2 (VCC)
+ESP32 GND   →  Pin 1 (GND)
+GPIO 22     →  Pin 3 (CE)
+GPIO 21     →  Pin 4 (CSN)
+GPIO 18     →  Pin 5 (SCK)
+GPIO 23     →  Pin 6 (MOSI)
+GPIO 19     →  Pin 7 (MISO)
+                        </div>
+                        <div style="margin-top: 10px; font-size: 0.8em; color: #7c8fc7;">+ 10µF capacitor</div>
+                    </div>
+                    
+                    <div class="summary-card">
+                        <h4>OLED Display</h4>
+                        <div class="code" style="margin: 0; font-size: 0.85em;">
+ESP32 3.3V  →  OLED VCC
+ESP32 GND   →  OLED GND
+GPIO 4      →  OLED SDA
+GPIO 5      →  OLED SCL
+                        </div>
+                        <div style="margin-top: 10px; font-size: 0.8em; color: #7c8fc7;">1.3" I2C Display</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="section" style="border-top: 1px solid rgba(0, 150, 255, 0.2); padding-top: 40px;">
+            <div class="card" style="text-align: center; background: rgba(0, 150, 255, 0.05);">
+                <div style="margin-bottom: 20px;">
+                    <h3 style="color: #00aaff; margin-bottom: 10px;">Project Credits</h3>
+                    <p style="color: #9ca3d8; font-size: 0.95em;">
+                        ESP32-BlueJammer Assembly Guide<br>
+                        <span style="color: #00aaff; font-weight: 500; font-size: 1.1em; letter-spacing: 1px;">KaliShamrock</span>
+                    </p>
+                </div>
+                <div style="display: flex; justify-content: center; gap: 30px; margin-top: 25px; flex-wrap: wrap;">
+                    <div>
+                        <div style="color: #7c8fc7; font-size: 0.85em; margin-bottom: 5px;">Original Project</div>
+                        <a href="https://github.com/EmenstaNougat/ESP32-BlueJammer" target="_blank" style="color: #00aaff; text-decoration: none;">@EmenstaNougat</a>
+                    </div>
+                    <div>
+                        <div style="color: #7c8fc7; font-size: 0.85em; margin-bottom: 5px;">Web Flasher</div>
+                        <a href="https://esp32-bluejammerflasher.pages.dev" target="_blank" style="color: #00aaff; text-decoration: none;">esp32-bluejammerflasher.pages.dev</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Smooth scrolling for navigation
+        document.querySelectorAll('.nav-item').forEach(item => {
+            item.addEventListener('click', function(e) {
+                e.preventDefault();
+                const targetId = this.getAttribute('href').substring(1);
+                const targetElement = document.getElementById(targetId);
+                if (targetElement) {
+                    targetElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    // Update active nav item
+                    document.querySelectorAll('.nav-item').forEach(nav => nav.classList.remove('active'));
+                    this.classList.add('active');
+                }
+            });
+        });
+        
+        // Update active nav on scroll
+        window.addEventListener('scroll', () => {
+            const sections = document.querySelectorAll('.section');
+            const navItems = document.querySelectorAll('.nav-item');
+            
+            let current = '';
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop;
+                const sectionHeight = section.clientHeight;
+                if (window.pageYOffset >= sectionTop - 200) {
+                    current = section.getAttribute('id');
+                }
+            });
+            
+            navItems.forEach(item => {
+                item.classList.remove('active');
+                if (item.getAttribute('href').substring(1) === current) {
+                    item.classList.add('active');
+                }
+            });
+        });
+    </script>
+</body>
+</html>
+
