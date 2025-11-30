@@ -789,6 +789,7 @@
         <a href="#antennas" class="nav-item">Antennas</a>
         <a href="#oled" class="nav-item">OLED Display</a>
         <a href="#firmware" class="nav-item">Firmware</a>
+        <a href="#troubleshooting" class="nav-item">Troubleshooting</a>
         <a href="#test" class="nav-item">Testing</a>
         <div class="credit">
             <div>Developed by</div>
@@ -1349,6 +1350,127 @@ GPIO 5      →  OLED SCL
                         </div>
                         <div style="margin-top: 10px; font-size: 0.8em; color: #7c8fc7;">1.3" I2C Display</div>
                     </div>
+                </div>
+            </div>
+        </div>
+        
+        <div id="troubleshooting" class="section">
+            <div class="section-header">
+                <div class="section-number">!</div>
+                <h2 class="section-title">Troubleshooting</h2>
+            </div>
+            
+            <div class="card">
+                <h3 style="color: #00aaff; margin-bottom: 20px;">HSPI Module 1 Initialization Failure</h3>
+                
+                <div class="alert" style="background: rgba(255, 50, 50, 0.1); border-left-color: #ff3232; margin-bottom: 25px;">
+                    <strong style="color: #ff6b6b;">⚠️ Error Message:</strong>
+                    <div style="margin-top: 10px; font-family: monospace; background: rgba(0, 0, 0, 0.3); padding: 15px; border-radius: 4px; color: #ff6b6b;">
+                        !!! Hardware Serial Peripheral Interface start failure!<br>
+                        HSPI nRF24 module could NOT be initialized!
+                    </div>
+                </div>
+                
+                <div style="margin-bottom: 25px;">
+                    <h4 style="color: #00aaff; margin-bottom: 15px;">Quick Diagnosis Checklist</h4>
+                    <div class="connection-summary" style="grid-template-columns: 1fr;">
+                        <div class="summary-card" style="background: rgba(255, 50, 50, 0.05);">
+                            <h4 style="color: #ff6b6b;">Module 1 (HSPI) - Check These First:</h4>
+                            <div style="margin-top: 15px; line-height: 2;">
+                                <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">
+                                    <span style="color: #00aaff;">✓</span>
+                                    <span>VCC → ESP32 3.3V (with 10µF capacitor)</span>
+                                </div>
+                                <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">
+                                    <span style="color: #00aaff;">✓</span>
+                                    <span>GND → ESP32 GND</span>
+                                </div>
+                                <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">
+                                    <span style="color: #00aaff;">✓</span>
+                                    <span>Pin 3 (CE) → GPIO 16</span>
+                                </div>
+                                <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">
+                                    <span style="color: #00aaff;">✓</span>
+                                    <span>Pin 4 (CSN) → GPIO 15</span>
+                                </div>
+                                <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">
+                                    <span style="color: #00aaff;">✓</span>
+                                    <span>Pin 5 (SCK) → GPIO 14</span>
+                                </div>
+                                <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">
+                                    <span style="color: #00aaff;">✓</span>
+                                    <span>Pin 6 (MOSI) → GPIO 13</span>
+                                </div>
+                                <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">
+                                    <span style="color: #00aaff;">✓</span>
+                                    <span>Pin 7 (MISO) → GPIO 12</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div style="margin-bottom: 25px;">
+                    <h4 style="color: #00aaff; margin-bottom: 15px;">Common Issues & Solutions</h4>
+                    
+                    <div class="info-box" style="margin-bottom: 15px; background: rgba(255, 200, 0, 0.1); border-left-color: #ffc800;">
+                        <strong style="color: #ffc800;">🔌 Issue 1: Loose Connections</strong>
+                        <p style="margin-top: 10px; color: #e0e7ff;">
+                            <strong>Solution:</strong> Unplug USB, re-seat all Module 1 wires, ensure tight connections. 
+                            Gently tug each wire to verify it's secure.
+                        </p>
+                    </div>
+                    
+                    <div class="info-box" style="margin-bottom: 15px; background: rgba(255, 200, 0, 0.1); border-left-color: #ffc800;">
+                        <strong style="color: #ffc800;">⚡ Issue 2: Power Problems</strong>
+                        <p style="margin-top: 10px; color: #e0e7ff;">
+                            <strong>Solution:</strong> Verify 3.3V is present at Module 1 VCC (use multimeter). 
+                            Check capacitor is connected correctly. Try different USB port/cable for more power.
+                        </p>
+                    </div>
+                    
+                    <div class="info-box" style="margin-bottom: 15px; background: rgba(255, 200, 0, 0.1); border-left-color: #ffc800;">
+                        <strong style="color: #ffc800;">🔢 Issue 3: Wrong Pin Mapping</strong>
+                        <p style="margin-top: 10px; color: #e0e7ff;">
+                            <strong>Solution:</strong> Double-check each pin connection matches the table above exactly. 
+                            Common mistake: swapping CE and CSN pins.
+                        </p>
+                    </div>
+                    
+                    <div class="info-box" style="margin-bottom: 15px; background: rgba(255, 200, 0, 0.1); border-left-color: #ffc800;">
+                        <strong style="color: #ffc800;">⚠️ Issue 4: GPIO 12 Boot Problem</strong>
+                        <p style="margin-top: 10px; color: #e0e7ff;">
+                            <strong>Solution:</strong> GPIO 12 (MISO) can cause boot issues if pulled HIGH. 
+                            Temporarily disconnect GPIO 12, boot ESP32, then reconnect. Or verify GPIO 12 connection is clean.
+                        </p>
+                    </div>
+                    
+                    <div class="info-box" style="margin-bottom: 15px; background: rgba(255, 200, 0, 0.1); border-left-color: #ffc800;">
+                        <strong style="color: #ffc800;">🔧 Issue 5: Faulty Module</strong>
+                        <p style="margin-top: 10px; color: #e0e7ff;">
+                            <strong>Solution:</strong> If Module 2 works but Module 1 doesn't, try swapping them. 
+                            If Module 2 works in Module 1's position, Module 1 hardware may be faulty.
+                        </p>
+                    </div>
+                </div>
+                
+                <div class="info-box" style="background: rgba(0, 150, 255, 0.1);">
+                    <strong style="color: #00aaff;">💡 Pro Tip: Compare Working vs Non-Working</strong>
+                    <p style="margin-top: 10px; color: #e0e7ff;">
+                        Since Module 2 (VSPI) is working, compare its connections to Module 1. 
+                        Both should have identical wiring patterns, just different GPIO pins. 
+                        If Module 2's connections look different, that's your clue!
+                    </p>
+                </div>
+                
+                <div style="margin-top: 30px; padding: 20px; background: rgba(0, 150, 255, 0.05); border-radius: 6px;">
+                    <h4 style="color: #00aaff; margin-bottom: 15px;">✅ Success Indicators</h4>
+                    <p style="color: #e0e7ff; line-height: 1.8;">
+                        When Module 1 initializes correctly, you'll see:<br>
+                        <code style="background: rgba(0, 0, 0, 0.3); padding: 5px 10px; border-radius: 4px; color: #00ff00;">
+                            Hardware Serial Peripheral Interface started !!! HSPI nRF24 module initialized SUCCESSFULLY!
+                        </code>
+                    </p>
                 </div>
             </div>
         </div>
